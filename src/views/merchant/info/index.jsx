@@ -1,27 +1,23 @@
 import React from 'react'
-import {Descriptions, Badge, Button} from 'antd'
+import {Descriptions, Badge, Button, Modal } from 'antd'
 import { connect } from "react-redux";
 import './index.less'
-import { getMerchantInfo } from '../../../api/merchant'
+import { getMerchantInfo } from "../../../store/actions";
 
 function MerchantInfo(props) {
-  // 定义状态
-  const [ merchantInfo, setMerchantInfo ] = React.useState({})
+  const { user, merchantInfo } = props
 
-  const merchantId = props.merchantId
-  // 调用接口获取数据
+  // 跳转编辑页面
+  const edit = () => {
+    props.history.push('/merchant/edit')
+  }
+
   React.useEffect(() => {
-    if (merchantId) {
-      getMerchantInfo(merchantId)
-        .then(data => {
-          setMerchantInfo(data.data.data.merchantInfo)
-        })
-        .catch(error => {});
+    if (user.merchantId && !merchantInfo.name) {
+      props.getMerchantInfo(user.merchantId)
     }
-    return () => {
-      setMerchantInfo({})
-    }
-  }, [ merchantId ])
+    return () => {}
+  }, [])
 
   return (
     <Descriptions
@@ -29,7 +25,7 @@ function MerchantInfo(props) {
       title="商户信息展示"
       bordered
       size="middle"
-      extra={<Button className="edit-button" type="primary">编辑</Button>}>
+      extra={<Button className="edit-button" type="primary" onClick={() => edit() }>编辑</Button>}>
       <Descriptions.Item label="商户名" span={3}>{merchantInfo.name}</Descriptions.Item>
       <Descriptions.Item label="商户地址" span={3}>{merchantInfo.address}</Descriptions.Item>
       <Descriptions.Item label="商户联系方式" span={3}>{merchantInfo.telephone}</Descriptions.Item>
@@ -42,5 +38,6 @@ function MerchantInfo(props) {
 }
 
 export default connect(
-  state => state.user
+    state => ({ user: state.user, merchantInfo: state.merchantInfo}),
+  { getMerchantInfo }
 )(MerchantInfo)
