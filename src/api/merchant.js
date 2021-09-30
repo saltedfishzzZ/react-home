@@ -6,3 +6,11 @@ export function getMerchantInfoApi(id) {
     method: 'get'
   })
 }
+
+export function editMerchantInfo(id, orderMerchantDTO) {
+  return request({
+    url: `/api/merchant/${id}`,
+    method: 'post',
+    data: orderMerchantDTO
+  })
+}
